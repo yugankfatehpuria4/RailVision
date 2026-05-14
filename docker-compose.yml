@@ -1,0 +1,49 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: railvision-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - railvision
+
+  backend:
+    build: ./backend
+    container_name: railvision-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017
+      - DB_NAME=railvision_db
+      - JWT_SECRET=railvision-hackathon-secret-key-2024
+      - FALLBACK_MODE=false
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:3001,http://frontend,*
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      - mongodb
+    networks:
+      - railvision
+
+  frontend:
+    build:
+      context: .
+      args:
+        VITE_BACKEND_URL: http://localhost:8000
+    container_name: railvision-frontend
+    ports:
+      - "3001:80"
+    depends_on:
+      - backend
+    networks:
+      - railvision
+
+volumes:
+  mongo_data:
+  uploads_data:
+
+networks:
+  railvision:
+    driver: bridge
