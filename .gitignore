@@ -13,3 +13,11 @@ __v0_jsx-dev-runtime.ts
 node_modules
 .next/
 .DS_Store
+
+# Python — never commit virtualenvs (torch/polars wheels exceed GitHub 100MB limit)
+venv/
+.venv/
+backend/venv/
+**/__pycache__/
+*.py[cod]
+dist/
