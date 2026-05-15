@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚆 RailVision AI
+# 🚆 RailVision 
 
 ### **AI-Powered Spatial Intelligence & Emergency Response Platform for Indian Railways**
 
@@ -23,9 +23,9 @@
 
 ---
 
-# ⚡ What is RailVision AI?
+# ⚡ What is RailVision ?
 
-RailVision AI is an **AI-powered geospatial intelligence platform** designed for modern railway infrastructure monitoring and emergency response.
+RailVision  is an **AI-powered geospatial intelligence platform** designed for modern railway infrastructure monitoring and emergency response.
 
 The platform combines:
 
@@ -234,15 +234,16 @@ flowchart LR
 |------|-------------|
 | **Frontend** | React 19, Vite, TypeScript, Tailwind CSS |
 | **GIS Visualization** | Leaflet.js, React Leaflet |
-| **Backend** | FastAPI, Uvicorn |
-| **Database** | MongoDB + Motor |
-| **AI / ML** | YOLOv8, SegFormer, PyTorch |
+| **Backend** | Python,FastAPI, Uvicorn |
+| **Database** | MongoDB |
+| **ML FrameWork** | Ultralytics YOLOv8, PyTorch |
+| **Pre-Trained Model** | YOLOv8|
 | **Image Processing** | OpenCV, Pillow |
 | **GIS Processing** | GDAL, Rasterio, GeoPandas |
 | **State Management** | Zustand |
 | **Charts** | Recharts, MUI-X |
 | **Authentication** | JWT |
-| **Deployment** | Docker, Nginx, Vercel |
+| **Deployment** | Docker, Vercel |
 
 ---
 
@@ -422,16 +423,6 @@ Features:
 
 ---
 
-# 🏆 Hackathon Positioning
-
-RailVision AI is not just an object detection system.
-
-It is:
-
-# “A real-time AI-powered geospatial intelligence and emergency response platform for Indian Railways.”
-
----
-
 # 🤝 Author
 
 Built by **Yugank Fatehpuria**
@@ -446,7 +437,7 @@ Focused on building:
 
 <div align="center">
 
-## 🚆 RailVision AI
+## 🚆 RailVision 
 
 **Spatial Intelligence for Modern Rail Infrastructure**
 
