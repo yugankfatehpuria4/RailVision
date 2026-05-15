@@ -299,20 +299,11 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
     });
 
     try {
-      // Step 1: Upload
-      set({ processingStatus: 'Scanning satellite imagery...', processingProgress: 25 });
-      let imageId: string | undefined;
-      try {
-        const uploadResult = await api.uploadImage(file, lat, lng);
-        imageId = uploadResult?.id;
-      } catch {
-        // Backend might be offline — continue with detection anyway
-      }
-
-      // Step 2: Detect
-      set({ processingStatus: 'Running AI detection engine...', processingProgress: 50 });
+      // Animated status messages while backend processes
+      set({ processingStatus: 'Sending image to AI engine...', processingProgress: 25 });
 
       const statusMessages = [
+        'Running YOLOv8 segmentation model...',
         'Detecting buildings and structures...',
         'Analyzing vegetation coverage...',
         'Identifying water bodies...',
@@ -322,22 +313,22 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
       ];
       let msgIdx = 0;
       const statusInterval = setInterval(() => {
-        set({ processingStatus: statusMessages[msgIdx % statusMessages.length] });
+        set({
+          processingStatus: statusMessages[msgIdx % statusMessages.length],
+          processingProgress: Math.min(25 + msgIdx * 8, 85),
+        });
         msgIdx++;
-      }, 700);
+      }, 800);
 
       let results: any;
       try {
-        results = await api.runDetection({
-          image_id: imageId,
-          latitude: lat,
-          longitude: lng,
-          detection_mode: 'full',
-        });
+        // Single request: upload image + run YOLO inference
+        results = await api.uploadAndDetect(file, lat, lng, 'full');
       } catch {
-        // Fallback: generate local dummy results
+        // Fallback: generate local dummy results when backend is offline
         results = {
           success: true,
+          model_used: null,
           total_detections: 12,
           processing_time_seconds: 2.5,
           detections: DUMMY_DETECTIONS.map((d, i) => ({
@@ -360,9 +351,9 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
       clearInterval(statusInterval);
       set({ processingProgress: 90, processingStatus: 'Finalizing analysis...' });
 
-      // Step 3: Add image to store
+      // Add image to store
       const newImage: RailImage = {
-        id: imageId || `img-${Date.now()}`,
+        id: results.image_id || `img-${Date.now()}`,
         name: file.name,
         fileName: file.name,
         uploadDate: new Date().toISOString(),
@@ -378,7 +369,9 @@ export const useAnalysisStore = create<AnalysisStore>((set, get) => ({
         activeDetectionResults: results,
         showDetectionPanel: true,
         isProcessing: false,
-        processingStatus: 'Analysis complete',
+        processingStatus: results.model_used
+          ? `✓ Real AI analysis complete (${results.model_used})`
+          : '✓ Analysis complete',
         processingProgress: 100,
       }));
     } catch (error) {

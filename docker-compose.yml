@@ -19,7 +19,7 @@ services:
       - DB_NAME=railvision_db
       - JWT_SECRET=railvision-hackathon-secret-key-2024
       - FALLBACK_MODE=false
-      - CORS_ORIGINS=http://localhost:3000,http://localhost:3001,http://frontend,*
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:3005,http://frontend,*
     volumes:
       - uploads_data:/app/uploads
     depends_on:
@@ -34,7 +34,7 @@ services:
         VITE_BACKEND_URL: http://localhost:8000
     container_name: railvision-frontend
     ports:
-      - "3001:80"
+      - "3005:80"
     depends_on:
       - backend
     networks:

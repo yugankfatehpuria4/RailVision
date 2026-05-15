@@ -1,6 +1,6 @@
 
 
-import { AlertCircle, CheckCircle, AlertTriangle, TrendingUp, RefreshCw } from 'lucide-react';
+import { AlertCircle, CheckCircle, AlertTriangle, TrendingUp, RefreshCw, Layers, Activity, Zap, Shield } from 'lucide-react';
 import { useAnalysisStore } from '@/lib/store';
 import { useEffect } from 'react';
 
@@ -15,15 +15,15 @@ export function RightPanel() {
   // Dynamic stats from detection results
   const summary = activeDetectionResults?.summary;
   const stats = summary ? [
-    { icon: '🏠', label: 'Buildings', value: summary.building_count || 0, color: 'b' as const, percentage: Math.min((summary.building_count || 0) * 15, 100) },
-    { icon: '🌳', label: 'Green Cover', value: `${summary.green_cover_pct || 0}%`, color: 'g' as const, percentage: summary.green_cover_pct || 0 },
-    { icon: '💧', label: 'Water Area', value: `${Math.round((summary.water_area_sqm || 0) / 100)}`, color: 'c' as const, percentage: Math.min((summary.water_area_sqm || 0) / 100, 100) },
-    { icon: '🚨', label: 'Encroach.', value: summary.encroachment_count || 0, color: 'r' as const, percentage: Math.min((summary.encroachment_count || 0) * 20, 100) },
+    { icon: <Layers size={18} />, label: 'Buildings', value: summary.building_count || 0, color: 'b' as const, percentage: Math.min((summary.building_count || 0) * 15, 100) },
+    { icon: <Activity size={18} />, label: 'Green Cover', value: `${summary.green_cover_pct || 0}%`, color: 'g' as const, percentage: summary.green_cover_pct || 0 },
+    { icon: <Zap size={18} />, label: 'Water Area', value: `${Math.round((summary.water_area_sqm || 0) / 100)}`, color: 'c' as const, percentage: Math.min((summary.water_area_sqm || 0) / 100, 100) },
+    { icon: <AlertTriangle size={18} />, label: 'Encroach.', value: summary.encroachment_count || 0, color: 'r' as const, percentage: Math.min((summary.encroachment_count || 0) * 20, 100) },
   ] : [
-    { icon: '🛤️', label: 'Total Tracks', value: 847, color: 'b' as const, percentage: 92 },
-    { icon: '🚉', label: 'Stations', value: 34, color: 'c' as const, percentage: 88 },
-    { icon: '🌉', label: 'Bridges', value: 156, color: 'a' as const, percentage: 75 },
-    { icon: '⚠️', label: 'Alerts', value: alerts.length || 3, color: 'r' as const, percentage: 45 },
+    { icon: <TrendingUp size={18} />, label: 'Neural Accuracy', value: '99.8%', color: 'b' as const, percentage: 92 },
+    { icon: <Layers size={18} />, label: 'Active Sectors', value: 34, color: 'c' as const, percentage: 88 },
+    { icon: <Shield size={18} />, label: 'Security Node', value: 'Active', color: 'a' as const, percentage: 100 },
+    { icon: <AlertTriangle size={18} />, label: 'System Load', value: '24%', color: 'r' as const, percentage: 24 },
   ];
 
   const displayAlerts = alerts.length > 0 ? alerts : [

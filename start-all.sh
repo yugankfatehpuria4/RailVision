@@ -25,7 +25,7 @@ echo "Backend started (PID: $BACKEND_PID)"
 echo ""
 
 # Start Frontend
-echo "Starting Frontend on port 3000..."
+echo "Starting Frontend on port 3005..."
 pnpm dev &
 FRONTEND_PID=$!
 sleep 3
@@ -35,7 +35,7 @@ echo ""
 echo "=========================================="
 echo "All services running!"
 echo "=========================================="
-echo "Frontend: http://localhost:3000"
+echo "Frontend: http://localhost:3005"
 echo "Backend: http://localhost:8000"
 echo "API Docs: http://localhost:8000/docs"
 echo ""

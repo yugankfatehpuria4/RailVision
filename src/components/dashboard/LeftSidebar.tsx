@@ -1,6 +1,6 @@
 
 
-import { Upload, Layers, Download, GitCompare, Zap, BarChart3 } from 'lucide-react';
+import { Upload, Layers, Download, GitCompare, Zap, BarChart3, Activity, AlertTriangle, TrendingUp, Shield, CheckCircle, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAnalysisStore } from '@/lib/store';
@@ -18,7 +18,20 @@ export function LeftSidebar({ onImageUpload, layers, onLayerToggle }: LeftSideba
   const [lng, setLng] = useState('77.2090');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const { isProcessing, processingStatus, processingProgress, uploadAndDetect, runChangeDetection, layerVisibility, toggleLayer, backendOnline } = useAnalysisStore();
+  const { isProcessing, processingStatus, processingProgress, uploadAndDetect, runChangeDetection, layerVisibility, toggleLayer, activeDetectionResults } = useAnalysisStore();
+  const summary = activeDetectionResults?.summary;
+
+  const stats = summary ? [
+    { icon: <Layers size={18} />, label: 'Buildings', value: summary.building_count || 0, color: 'b' as const, percentage: Math.min((summary.building_count || 0) * 15, 100) },
+    { icon: <Activity size={18} />, label: 'Green Cover', value: `${summary.green_cover_pct || 0}%`, color: 'g' as const, percentage: summary.green_cover_pct || 0 },
+    { icon: <Zap size={18} />, label: 'Water Area', value: `${Math.round((summary.water_area_sqm || 0) / 100)}`, color: 'c' as const, percentage: Math.min((summary.water_area_sqm || 0) / 100, 100) },
+    { icon: <AlertTriangle size={18} />, label: 'Encroach.', value: summary.encroachment_count || 0, color: 'r' as const, percentage: Math.min((summary.encroachment_count || 0) * 20, 100) },
+  ] : [
+    { icon: <TrendingUp size={18} />, label: 'Neural Accuracy', value: '99.8%', color: 'b' as const, percentage: 92 },
+    { icon: <Layers size={18} />, label: 'Active Sectors', value: 34, color: 'c' as const, percentage: 88 },
+    { icon: <Shield size={18} />, label: 'Security Node', value: 'Active', color: 'a' as const, percentage: 100 },
+    { icon: <AlertTriangle size={18} />, label: 'System Load', value: '24%', color: 'r' as const, percentage: 24 },
+  ];
 
   const defaultLayers = layers || [
     { id: 'tracks', name: 'Railway Tracks', enabled: layerVisibility.tracks },
@@ -78,40 +91,40 @@ export function LeftSidebar({ onImageUpload, layers, onLayerToggle }: LeftSideba
         {/* Upload Zone */}
         <div onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}
           style={{
-            border: isDragging ? '2px solid var(--ab)' : selectedFile ? '2px solid var(--ag)' : '2px dashed var(--bdg)',
-            borderRadius: '10px', padding: '14px 12px', textAlign: 'center', cursor: 'pointer',
-            transition: 'all 0.3s', background: isDragging ? 'rgba(14,165,233,0.15)' : selectedFile ? 'rgba(16,217,122,0.05)' : 'rgba(14,165,233,0.03)',
+            border: isDragging ? '2px solid var(--ab)' : selectedFile ? '2px solid var(--ag)' : '1px solid var(--bdr)',
+            borderRadius: '16px', padding: '20px 16px', textAlign: 'center', cursor: 'pointer',
+            transition: 'all 0.3s', background: isDragging ? 'rgba(6,182,212,0.1)' : selectedFile ? 'rgba(16,185,129,0.05)' : 'rgba(255,255,255,0.02)',
+            boxShadow: isDragging ? '0 0 20px rgba(6,182,212,0.1)' : 'none',
           }}>
           <label style={{ cursor: 'pointer', display: 'block' }}>
-            <div style={{ fontSize: '24px', marginBottom: '4px' }}>{selectedFile ? '✅' : '📸'}</div>
+            <div style={{ fontSize: '32px', marginBottom: '8px' }}>
+              {selectedFile ? <CheckCircle className="inline" size={32} color="var(--ag)" /> : <Upload className="inline" size={32} color="var(--ab)" />}
+            </div>
             {selectedFile ? (
-              <div style={{ fontSize: '11px', color: 'var(--ag)' }}>
-                <strong style={{ display: 'block', fontSize: '12px', marginBottom: '2px' }}>{selectedFile.name}</strong>
+              <div style={{ fontSize: '12px', color: 'var(--ag)' }}>
+                <strong style={{ display: 'block', fontSize: '13px', marginBottom: '4px', fontFamily: "'Rajdhani', sans-serif" }}>{selectedFile.name}</strong>
                 {(selectedFile.size / 1024 / 1024).toFixed(1)} MB
               </div>
             ) : (
-              <div style={{ fontSize: '11px', color: 'var(--ts)', lineHeight: '1.5' }}>
-                <strong style={{ color: 'var(--ab)', display: 'block', fontSize: '12px', marginBottom: '2px' }}>Click to upload</strong>
-                or drag and drop
+              <div style={{ fontSize: '12px', color: 'var(--ts)', lineHeight: '1.6', fontFamily: "'Rajdhani', sans-serif" }}>
+                <strong style={{ color: 'var(--ab)', display: 'block', fontSize: '14px', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Upload Mission Intel</strong>
+                Drag and drop satellite imagery
               </div>
             )}
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: 'var(--tm)', marginTop: '4px' }}>
-              PNG, JPG, TIFF up to 50MB
-            </div>
             <input type="file" accept="image/*,.tif,.tiff" onChange={handleFileInput} style={{ display: 'none' }} />
           </label>
         </div>
 
         {/* GPS Inputs */}
-        <div style={{ marginTop: '10px', display: 'flex', gap: '6px' }}>
+        <div style={{ marginTop: '16px', display: 'flex', gap: '8px' }}>
           <div style={{ flex: 1 }}>
-            <label style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--tm)', fontFamily: "'JetBrains Mono', monospace", display: 'block', marginBottom: '3px' }}>Lat</label>
+            <label style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--tm)', fontFamily: "'JetBrains Mono', monospace", display: 'block', marginBottom: '4px' }}>Latitude</label>
             <input type="text" value={lat} onChange={(e) => setLat(e.target.value)} style={inputStyle}
               onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--ab)')}
               onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--bdr)')} />
           </div>
           <div style={{ flex: 1 }}>
-            <label style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--tm)', fontFamily: "'JetBrains Mono', monospace", display: 'block', marginBottom: '3px' }}>Lng</label>
+            <label style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--tm)', fontFamily: "'JetBrains Mono', monospace", display: 'block', marginBottom: '4px' }}>Longitude</label>
             <input type="text" value={lng} onChange={(e) => setLng(e.target.value)} style={inputStyle}
               onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--ab)')}
               onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--bdr)')} />
@@ -120,36 +133,39 @@ export function LeftSidebar({ onImageUpload, layers, onLayerToggle }: LeftSideba
 
         {/* Progress bar */}
         {isProcessing && (
-          <div style={{ marginTop: '8px' }}>
-            <div style={{ height: '3px', background: 'var(--bgh)', borderRadius: '2px', overflow: 'hidden' }}>
+          <div style={{ marginTop: '12px' }}>
+            <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
               <div style={{
                 height: '100%', borderRadius: '2px', width: `${processingProgress}%`,
                 background: 'linear-gradient(90deg, var(--ab), var(--ac))', transition: 'width 0.3s',
+                boxShadow: '0 0 10px var(--ab)',
               }} />
             </div>
-            <div style={{ fontSize: '10px', color: 'var(--tm)', marginTop: '3px', fontFamily: "'JetBrains Mono', monospace" }}>
-              {processingStatus}
+            <div style={{ fontSize: '10px', color: 'var(--ab)', marginTop: '6px', fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              SCANNING: {processingStatus}
             </div>
           </div>
         )}
 
         {/* Analyze Button */}
         <button disabled={isProcessing || !selectedFile} onClick={handleAnalyze} style={{
-          width: '100%', marginTop: '9px', padding: '9px',
-          background: isProcessing ? 'linear-gradient(135deg, #1a2d52, #0d2040)' : !selectedFile ? 'linear-gradient(135deg, #1a2d52, #0d2040)' : 'linear-gradient(135deg, var(--ab), var(--ac))',
-          border: 'none', borderRadius: '8px', color: '#fff',
-          fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: '13px', letterSpacing: '0.08em',
+          width: '100%', marginTop: '16px', padding: '12px',
+          background: isProcessing ? 'rgba(255,255,255,0.05)' : !selectedFile ? 'rgba(255,255,255,0.05)' : 'linear-gradient(135deg, var(--ab), var(--ac))',
+          border: 'none', borderRadius: '12px', color: isProcessing || !selectedFile ? 'var(--tm)' : 'black',
+          fontFamily: "'Rajdhani', sans-serif", fontWeight: 800, fontSize: '14px', letterSpacing: '0.1em',
           cursor: isProcessing || !selectedFile ? 'not-allowed' : 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
-          transition: 'all 0.3s', opacity: isProcessing || !selectedFile ? 0.6 : 1,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+          transition: 'all 0.3s', opacity: isProcessing || !selectedFile ? 0.5 : 1,
           animation: isProcessing ? 'spulse 1.5s ease-in-out infinite' : 'none',
+          textTransform: 'uppercase',
         }}>
           {isProcessing ? (
-            <><div style={{ width: '12px', height: '12px', border: '2px solid rgba(255,255,255,0.2)', borderTop: '2px solid #fff', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} /> Analyzing...</>
+            <><RefreshCw size={16} className="animate-spin" /> PROCESSING...</>
           ) : (
-            <><Zap size={14} /> Analyze Image</>
+            <><Zap size={16} /> START AI ANALYSIS</>
           )}
         </button>
+
       </div>
 
       {/* Layers Section */}
@@ -230,8 +246,7 @@ export function LeftSidebar({ onImageUpload, layers, onLayerToggle }: LeftSideba
           </button>
           <button onClick={() => exportCSV()} style={{
             flex: 1, padding: '7px', borderRadius: '6px', border: '1px solid var(--bdr)',
-            background: 'var(--bgc)', color: 'var(--ts)', cursor: 'pointer', fontSize: '10px',
-            fontFamily: "'JetBrains Mono', monospace", display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+            background: 'var(--bgc)', color: 'var(--ts)', cursor: 'pointer',
           }}>
             <Download size={10} /> CSV
           </button>

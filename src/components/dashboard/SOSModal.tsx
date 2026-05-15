@@ -3,13 +3,13 @@ import { useAnalysisStore } from '@/lib/store';
 import { X, AlertTriangle, MapPin } from 'lucide-react';
 
 const INCIDENT_TYPES = [
-  { value: 'flood', label: '🌊 Flood', color: '#3b82f6' },
+  { value: 'flood', label: '🌊 Flood', color: '#0ea5e9' },
   { value: 'encroachment', label: '🚧 Encroachment', color: '#f59e0b' },
-  { value: 'derailment', label: '🚂 Derailment', color: '#dc2626' },
+  { value: 'derailment', label: '🚂 Derailment', color: '#ef4444' },
   { value: 'fire', label: '🔥 Fire', color: '#ef4444' },
   { value: 'landslide', label: '⛰️ Landslide', color: '#a855f7' },
   { value: 'track_damage', label: '🛤️ Track Damage', color: '#f97316' },
-  { value: 'other', label: '⚠️ Other', color: '#6b7280' },
+  { value: 'other', label: '⚠️ Other', color: '#94a3b8' },
 ];
 
 export function SOSModal() {
@@ -35,57 +35,60 @@ export function SOSModal() {
   };
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '10px 12px', background: '#fff',
-    border: '1.5px solid #e2e8f0', borderRadius: '10px', color: '#0f172a',
-    fontSize: '14px', fontFamily: "'Exo 2', sans-serif", outline: 'none',
-    transition: 'border-color 0.2s',
+    width: '100%', padding: '14px 16px', background: 'rgba(255,255,255,0.03)',
+    border: '1px solid var(--bdr)', borderRadius: '12px', color: 'white',
+    fontSize: '14px', fontFamily: "'Rajdhani', sans-serif", outline: 'none',
+    transition: 'all 0.3s', resize: 'none'
   };
 
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 10000,
-      background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)',
+      background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(12px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }} onClick={() => setShowSOSModal(false)}>
       <div onClick={(e) => e.stopPropagation()} style={{
-        width: '480px', background: '#fff', borderRadius: '20px',
-        boxShadow: '0 25px 50px rgba(0,0,0,0.25)', overflow: 'hidden',
+        width: '520px', background: 'var(--bgp)', borderRadius: '24px',
+        boxShadow: '0 40px 100px rgba(0,0,0,0.8)', overflow: 'hidden',
+        border: '1px solid var(--bdr)', position: 'relative',
       }}>
         {/* Header */}
         <div style={{
-          background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-          padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          color: 'white',
+          background: 'linear-gradient(135deg, #ef4444, #991b1b)',
+          padding: '24px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          color: 'white', borderBottom: '1px solid rgba(255,255,255,0.1)',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <AlertTriangle size={22} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <AlertTriangle size={28} />
             <div>
-              <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: '20px', letterSpacing: '0.08em' }}>
-                EMERGENCY SOS
+              <div style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 800, fontSize: '24px', letterSpacing: '0.15em' }}>
+                PRIORITY SOS SIGNAL
               </div>
-              <div style={{ fontSize: '11px', opacity: 0.8 }}>Create an emergency incident report</div>
+              <div style={{ fontSize: '12px', opacity: 0.8, fontWeight: 500, letterSpacing: '0.05em' }}>EMERGENCY RESPONSE PROTOCOL INITIATED</div>
             </div>
           </div>
           <button onClick={() => setShowSOSModal(false)} style={{
-            background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '8px',
-            width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', color: 'white',
-          }}><X size={16} /></button>
+            background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '10px',
+            width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', color: 'white', transition: 'all 0.2s',
+          }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.2)')}
+          ><X size={20} /></button>
         </div>
 
         {/* Form */}
-        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {/* Incident Type */}
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '6px' }}>Incident Type</label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+            <label style={{ fontSize: '12px', fontWeight: 800, color: 'var(--tm)', display: 'block', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'Rajdhani', sans-serif" }}>Incident Classification</label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
               {INCIDENT_TYPES.map((t) => (
                 <button key={t.value} onClick={() => setIncidentType(t.value)} style={{
-                  padding: '10px 8px', borderRadius: '10px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-                  border: incidentType === t.value ? `2px solid ${t.color}` : '2px solid #e2e8f0',
-                  background: incidentType === t.value ? `${t.color}12` : '#f8fafc',
-                  color: incidentType === t.value ? t.color : '#64748b',
-                  transition: 'all 0.2s',
+                  padding: '12px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: 700, cursor: 'pointer',
+                  border: incidentType === t.value ? `2px solid ${t.color}` : '1px solid var(--bdr)',
+                  background: incidentType === t.value ? `${t.color}15` : 'rgba(255,255,255,0.02)',
+                  color: incidentType === t.value ? t.color : 'var(--ts)',
+                  transition: 'all 0.2s', fontFamily: "'Rajdhani', sans-serif", textTransform: 'uppercase',
                 }}>{t.label}</button>
               ))}
             </div>
@@ -93,19 +96,20 @@ export function SOSModal() {
 
           {/* Severity */}
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '6px' }}>Severity Level</label>
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <label style={{ fontSize: '12px', fontWeight: 800, color: 'var(--tm)', display: 'block', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'Rajdhani', sans-serif" }}>Severity Level</label>
+            <div style={{ display: 'flex', gap: '10px' }}>
               {[
-                { val: 'critical', label: 'Critical', color: '#dc2626' },
-                { val: 'high', label: 'High', color: '#f59e0b' },
-                { val: 'medium', label: 'Medium', color: '#3b82f6' },
+                { val: 'critical', label: 'CRITICAL', color: '#ef4444' },
+                { val: 'high', label: 'HIGH', color: '#f59e0b' },
+                { val: 'medium', label: 'MEDIUM', color: '#0ea5e9' },
               ].map((s) => (
                 <button key={s.val} onClick={() => setSeverity(s.val)} style={{
-                  flex: 1, padding: '10px', borderRadius: '10px', fontWeight: 700, fontSize: '13px',
+                  flex: 1, padding: '12px', borderRadius: '12px', fontWeight: 800, fontSize: '13px',
                   cursor: 'pointer', transition: 'all 0.2s',
-                  border: severity === s.val ? `2px solid ${s.color}` : '2px solid #e2e8f0',
-                  background: severity === s.val ? `${s.color}15` : '#f8fafc',
-                  color: severity === s.val ? s.color : '#94a3b8',
+                  border: severity === s.val ? `2px solid ${s.color}` : '1px solid var(--bdr)',
+                  background: severity === s.val ? `${s.color}20` : 'rgba(255,255,255,0.02)',
+                  color: severity === s.val ? s.color : 'var(--ts)',
+                  fontFamily: "'Rajdhani', sans-serif",
                 }}>{s.label}</button>
               ))}
             </div>
@@ -113,36 +117,39 @@ export function SOSModal() {
 
           {/* Location */}
           <div style={{
-            display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px',
-            background: '#f1f5f9', borderRadius: '10px', fontSize: '12px', color: '#475569',
+            display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px',
+            background: 'rgba(255,255,255,0.02)', borderRadius: '12px', fontSize: '13px', color: 'var(--ts)',
+            border: '1px solid var(--bdr)',
           }}>
-            <MapPin size={14} />
-            <span>Auto-detected: <strong style={{ color: '#0f172a' }}>28.6139°N, 77.2090°E</strong> (New Delhi Zone)</span>
+            <MapPin size={18} color="var(--ab)" />
+            <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>LOCATION ACQUIRED: <strong style={{ color: 'var(--ab)' }}>28.6139°N, 77.2090°E</strong></span>
           </div>
 
           {/* Description */}
           <div>
-            <label style={{ fontSize: '12px', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '6px' }}>Description</label>
+            <label style={{ fontSize: '12px', fontWeight: 800, color: 'var(--tm)', display: 'block', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: "'Rajdhani', sans-serif" }}>Mission Notes</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe the emergency situation..."
-              rows={3} style={{ ...inputStyle, resize: 'vertical' }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = '#dc2626')}
-              onBlur={(e) => (e.currentTarget.style.borderColor = '#e2e8f0')} />
+              placeholder="Provide tactical details..."
+              rows={3} style={inputStyle}
+              onFocus={(e) => (e.currentTarget.style.borderColor = '#ef4444')}
+              onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--bdr)')} />
           </div>
 
           {/* Submit */}
           <button onClick={handleSubmit} disabled={loading} style={{
-            width: '100%', padding: '14px', borderRadius: '12px', border: 'none',
-            background: 'linear-gradient(135deg, #dc2626, #b91c1c)', color: '#fff',
-            fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: '16px',
-            letterSpacing: '0.08em', cursor: loading ? 'wait' : 'pointer',
+            width: '100%', padding: '18px', borderRadius: '16px', border: 'none',
+            background: 'linear-gradient(135deg, #ef4444, #991b1b)', color: '#fff',
+            fontFamily: "'Rajdhani', sans-serif", fontWeight: 900, fontSize: '18px',
+            letterSpacing: '0.2em', cursor: loading ? 'wait' : 'pointer',
             opacity: loading ? 0.7 : 1, transition: 'all 0.3s',
-            boxShadow: '0 4px 14px rgba(220,38,38,0.4)',
+            boxShadow: '0 10px 30px rgba(239, 68, 68, 0.4)',
+            textTransform: 'uppercase',
           }}>
-            {loading ? 'TRANSMITTING...' : '🚨 TRANSMIT EMERGENCY SOS'}
+            {loading ? 'TRANSMITTING...' : 'TRANSMIT EMERGENCY SOS'}
           </button>
         </div>
       </div>
     </div>
   );
 }
+

@@ -87,6 +87,30 @@ export async function runDetection(params: DetectParams) {
   return data;
 }
 
+/**
+ * Upload an image and run YOLO detection in a single request.
+ * This sends the actual image file to the backend so the real ML model
+ * can perform inference on it.
+ */
+export async function uploadAndDetect(
+  file: File,
+  latitude: number,
+  longitude: number,
+  detectionMode: string = 'full',
+) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('latitude', String(latitude));
+  formData.append('longitude', String(longitude));
+  formData.append('detection_mode', detectionMode);
+
+  const { data } = await api.post('/api/detect/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 120000, // YOLO inference can take a while
+  });
+  return data;
+}
+
 // ── Change Detection ────────────────────────────────────────────
 
 export async function runChangeDetection(params: {

@@ -28,24 +28,26 @@ export function DetectionResultsPanel() {
     }}>
       {/* Header */}
       <div style={{
-        padding: '14px 16px', borderBottom: '1px solid var(--bdr)',
-        background: 'linear-gradient(135deg, rgba(14, 165, 233, 0.08), rgba(6, 214, 224, 0.04))',
+        padding: '20px 24px', borderBottom: '1px solid var(--bdr)',
+        background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(6, 182, 212, 0.02))',
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: 'var(--tm)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>
-              Detection Results
+            <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: '12px', color: 'var(--ab)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '4px', fontWeight: 800 }}>
+              AI SATELLITE SCAN
             </div>
-            <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: '20px', fontWeight: 700 }}>
-              {summary.total_detections} Assets Detected
+            <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: '24px', fontWeight: 800, color: 'white' }}>
+              {summary.total_detections} SIGNALS ACQUIRED
             </div>
           </div>
           <button onClick={() => setShowDetectionPanel(false)} style={{
-            width: '30px', height: '30px', borderRadius: '6px', border: '1px solid var(--bdr)',
-            background: 'var(--bgc)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', color: 'var(--ts)',
-          }}>
-            <X size={14} />
+            width: '36px', height: '36px', borderRadius: '10px', border: '1px solid var(--bdr)',
+            background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', color: 'var(--ts)', transition: 'all 0.2s',
+          }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
+          >
+            <X size={20} />
           </button>
         </div>
 

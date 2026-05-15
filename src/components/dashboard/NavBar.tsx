@@ -1,4 +1,4 @@
-import { Bell, Menu, LogOut, ChevronDown, Search, AlertTriangle } from 'lucide-react';
+import { Bell, Menu, LogOut, ChevronDown, Search, AlertTriangle, Satellite, MapPin } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAnalysisStore } from '@/lib/store';
@@ -46,47 +46,54 @@ export function NavBar({ onMenuClick, userName = 'Admin', userRole = 'Western Ra
 
   return (
     <div style={{
-      height: '56px', background: 'var(--bgp)',
+      height: '64px', background: 'var(--bgp)',
       borderBottom: '1px solid var(--bdr)', display: 'flex', alignItems: 'center',
-      padding: '0 16px', gap: '14px', flexShrink: 0, position: 'relative',
+      padding: '0 20px', gap: '20px', flexShrink: 0, position: 'relative',
+      backdropFilter: 'blur(20px)', zIndex: 100,
     }}>
-      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, var(--ab), var(--ac), transparent)', opacity: 0.4 }} />
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, var(--ab), var(--ac), transparent)', opacity: 0.6 }} />
 
       {/* Menu */}
       <button onClick={onMenuClick} style={{
-        width: '34px', height: '34px', background: 'var(--bgc)', border: '1px solid var(--bdr)',
-        borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        width: '40px', height: '40px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--bdr)',
+        borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer', color: 'var(--ts)', transition: 'all 0.2s',
       }}>
-        <Menu size={16} />
+        <Menu size={20} />
       </button>
 
       {/* Brand */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: '20px', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontFamily: "'Rajdhani', sans-serif", fontWeight: 800, fontSize: '24px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
         <div style={{
-          width: '36px', height: '36px', background: 'linear-gradient(135deg, var(--ab), var(--ac))',
-          borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '17px', boxShadow: '0 0 16px rgba(14, 165, 233, 0.35)',
-        }}>🛤️</div>
-        <span>RailVision</span>
-        <span style={{ fontSize: '10px', color: 'var(--ac)', fontWeight: 500, letterSpacing: '0.05em' }}>AI</span>
+          width: '42px', height: '42px', background: 'linear-gradient(135deg, var(--ab), var(--ac))',
+          borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: '20px', boxShadow: '0 0 20px rgba(6, 182, 212, 0.4)', border: '1px solid rgba(255,255,255,0.2)',
+        }}>
+          <Satellite size={22} color="black" />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+          <span style={{ color: 'white' }}>RAIL<span style={{ color: 'var(--ab)' }}>VISION</span></span>
+          <span style={{ fontSize: '10px', color: 'var(--tm)', fontWeight: 500, letterSpacing: '0.3em', marginTop: '2px' }}>NEURAL COMMAND</span>
+        </div>
       </div>
 
       {/* Zone Selector */}
-      <div style={{ position: 'relative', marginLeft: '12px' }}>
+      <div style={{ position: 'relative', marginLeft: '20px' }}>
         <button onClick={() => setZoneOpen(!zoneOpen)} style={{
-          display: 'flex', alignItems: 'center', gap: '6px', padding: '5px 12px',
-          background: 'var(--bgc)', border: '1px solid var(--bdr)', borderRadius: '6px',
-          cursor: 'pointer', color: 'var(--tp)', fontSize: '12px',
-          fontFamily: "'Rajdhani', sans-serif", fontWeight: 600,
+          display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px',
+          background: 'rgba(255,255,255,0.03)', border: '1px solid var(--bdr)', borderRadius: '10px',
+          cursor: 'pointer', color: 'var(--tp)', fontSize: '13px',
+          fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em',
         }}>
-          {selectedZone} <ChevronDown size={12} />
+          <MapPin size={14} style={{ color: 'var(--ab)' }} />
+          {selectedZone} <ChevronDown size={14} style={{ opacity: 0.5 }} />
         </button>
         {zoneOpen && (
           <div style={{
-            position: 'absolute', top: '100%', left: 0, marginTop: '4px', zIndex: 2000,
-            background: 'var(--bgp)', border: '1px solid var(--bdr)', borderRadius: '8px',
-            padding: '4px', minWidth: '200px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+            position: 'absolute', top: '100%', left: 0, marginTop: '10px', zIndex: 2000,
+            background: 'var(--bgp)', border: '1px solid var(--bdr)', borderRadius: '12px',
+            padding: '6px', minWidth: '240px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(20px)',
           }}>
             {RAILWAY_ZONES.map((zone) => (
               <div key={zone} onClick={() => {
@@ -97,13 +104,14 @@ export function NavBar({ onMenuClick, userName = 'Admin', userRole = 'Western Ra
                 }
               }}
                 style={{
-                  padding: '6px 10px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px',
+                  padding: '10px 14px', borderRadius: '8px', cursor: 'pointer', fontSize: '13px',
+                  fontFamily: "'Rajdhani', sans-serif", fontWeight: 600,
                   color: zone === selectedZone ? 'var(--ab)' : 'var(--ts)',
-                  background: zone === selectedZone ? 'rgba(14,165,233,0.1)' : 'transparent',
+                  background: zone === selectedZone ? 'rgba(6,182,212,0.1)' : 'transparent',
                   transition: 'all 0.15s',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bgh)')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = zone === selectedZone ? 'rgba(14,165,233,0.1)' : 'transparent')}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = zone === selectedZone ? 'rgba(6,182,212,0.1)' : 'transparent')}
               >{zone}</div>
             ))}
           </div>
@@ -114,90 +122,95 @@ export function NavBar({ onMenuClick, userName = 'Admin', userRole = 'Western Ra
 
       {/* Search */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: '6px', padding: '5px 10px',
-        background: 'var(--bgc)', border: '1px solid var(--bdr)', borderRadius: '6px', width: '200px',
-      }}>
-        <Search size={13} style={{ color: 'var(--tm)' }} />
-        <input placeholder="Search assets..." style={{
+        display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 16px',
+        background: 'rgba(255,255,255,0.02)', border: '1px solid var(--bdr)', borderRadius: '10px', width: '280px',
+        transition: 'all 0.3s',
+      }}
+        onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'rgba(6,182,212,0.3)')}
+      >
+        <Search size={16} style={{ color: 'var(--tm)' }} />
+        <input placeholder="Search mission assets..." style={{
           background: 'transparent', border: 'none', outline: 'none', color: 'var(--tp)',
-          fontSize: '12px', width: '100%', fontFamily: "'Exo 2', sans-serif",
+          fontSize: '13px', width: '100%', fontFamily: "'Rajdhani', sans-serif", fontWeight: 500,
         }} />
       </div>
 
       {/* SOS Toggle */}
       <button onClick={() => setShowSOSPanel(!showSOSPanel)} style={{
-        height: '34px', padding: '0 12px', background: activeSOSCount > 0 ? 'rgba(220,38,38,0.1)' : 'var(--bgc)',
-        border: activeSOSCount > 0 ? '1px solid rgba(220,38,38,0.3)' : '1px solid var(--bdr)',
-        borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '6px',
-        cursor: 'pointer', color: activeSOSCount > 0 ? '#dc2626' : 'var(--ts)',
-        fontSize: '11px', fontWeight: 700, fontFamily: "'Rajdhani', sans-serif",
-        letterSpacing: '0.05em', transition: 'all 0.2s',
+        height: '40px', padding: '0 16px', background: activeSOSCount > 0 ? 'rgba(239,68,68,0.15)' : 'rgba(255,255,255,0.03)',
+        border: activeSOSCount > 0 ? '1px solid rgba(239,68,68,0.4)' : '1px solid var(--bdr)',
+        borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '10px',
+        cursor: 'pointer', color: activeSOSCount > 0 ? '#ef4444' : 'var(--ts)',
+        fontSize: '13px', fontWeight: 800, fontFamily: "'Rajdhani', sans-serif",
+        letterSpacing: '0.1em', transition: 'all 0.2s',
       }}>
-        <AlertTriangle size={14} />
+        <AlertTriangle size={18} />
         SOS
         {activeSOSCount > 0 && (
           <span style={{
-            background: '#dc2626', color: '#fff', borderRadius: '10px', padding: '1px 6px',
-            fontSize: '10px', fontFamily: "'JetBrains Mono', monospace",
-            animation: 'pdot 2s ease-in-out infinite',
+            background: '#ef4444', color: '#fff', borderRadius: '6px', padding: '2px 8px',
+            fontSize: '12px', fontWeight: 900,
+            animation: 'pdot 1s ease-in-out infinite',
           }}>{activeSOSCount}</span>
         )}
       </button>
 
       {/* Notifications */}
       <button style={{
-        width: '34px', height: '34px', background: 'var(--bgc)', border: '1px solid var(--bdr)',
-        borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        width: '40px', height: '40px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--bdr)',
+        borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
         cursor: 'pointer', color: 'var(--ts)', position: 'relative',
       }}>
-        <Bell size={16} />
+        <Bell size={20} />
         <div style={{
-          position: 'absolute', top: '-4px', right: '-4px', width: '14px', height: '14px',
-          background: 'var(--ar)', borderRadius: '50%', fontSize: '9px', display: 'flex',
-          alignItems: 'center', justifyContent: 'center', fontFamily: "'JetBrains Mono', monospace",
-          color: 'white', fontWeight: 700, animation: 'pdot 2s ease-in-out infinite',
+          position: 'absolute', top: '-4px', right: '-4px', width: '18px', height: '18px',
+          background: 'var(--ar)', borderRadius: '6px', fontSize: '10px', display: 'flex',
+          alignItems: 'center', justifyContent: 'center', fontFamily: "'Rajdhani', sans-serif",
+          color: 'white', fontWeight: 900, animation: 'pdot 2s ease-in-out infinite',
+          border: '2px solid var(--bgp)',
         }}>3</div>
       </button>
 
       {/* User Menu */}
       <div style={{ position: 'relative' }}>
         <div onClick={() => setUserMenuOpen(!userMenuOpen)} style={{
-          display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bgc)',
-          border: '1px solid var(--bdr)', borderRadius: '8px', padding: '4px 12px 4px 6px', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.03)',
+          border: '1px solid var(--bdr)', borderRadius: '12px', padding: '6px 16px 6px 8px', cursor: 'pointer',
         }}>
           <div style={{
-            width: '28px', height: '28px', borderRadius: '6px',
+            width: '32px', height: '32px', borderRadius: '8px',
             background: 'linear-gradient(135deg, var(--ab), var(--ap))',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '12px', color: 'white',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '14px', color: 'black',
           }}>{displayName.charAt(0)}</div>
-          <div>
-            <div style={{ fontSize: '12px', fontWeight: 600 }}>{displayName}</div>
-            <div style={{ fontSize: '10px', color: 'var(--ts)', fontFamily: "'JetBrains Mono', monospace", textTransform: 'capitalize' }}>{displayRole}</div>
+          <div style={{ display: 'block' }}>
+            <div style={{ fontSize: '13px', fontWeight: 700, color: 'white', fontFamily: "'Rajdhani', sans-serif" }}>{displayName}</div>
+            <div style={{ fontSize: '10px', color: 'var(--tm)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{displayRole}</div>
           </div>
-          <ChevronDown size={12} style={{ color: 'var(--tm)' }} />
+          <ChevronDown size={14} style={{ color: 'var(--tm)' }} />
         </div>
 
         {userMenuOpen && (
           <div style={{
-            position: 'absolute', top: '100%', right: 0, marginTop: '4px', zIndex: 2000,
-            background: '#fff', border: '1px solid #e2e8f0', borderRadius: '10px',
-            padding: '4px', minWidth: '180px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+            position: 'absolute', top: '100%', right: 0, marginTop: '10px', zIndex: 2000,
+            background: 'var(--bgp)', border: '1px solid var(--bdr)', borderRadius: '12px',
+            padding: '8px', minWidth: '220px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(20px)',
           }}>
             <div style={{
-              padding: '8px 12px', borderBottom: '1px solid #f1f5f9', marginBottom: '4px',
+              padding: '12px', borderBottom: '1px solid var(--bdr)', marginBottom: '8px',
             }}>
-              <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>{displayName}</div>
-              <div style={{ fontSize: '11px', color: '#64748b' }}>{user?.email || 'admin@railvision.ai'}</div>
+              <div style={{ fontSize: '14px', fontWeight: 800, color: 'white', fontFamily: "'Rajdhani', sans-serif" }}>{displayName}</div>
+              <div style={{ fontSize: '12px', color: 'var(--tm)', marginTop: '2px' }}>{user?.email || 'admin@railvision.ai'}</div>
             </div>
             <div onClick={handleLogout} style={{
-              padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px',
-              color: '#dc2626', display: 'flex', alignItems: 'center', gap: '8px',
-              transition: 'all 0.15s',
+              padding: '10px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '13px',
+              color: '#ef4444', display: 'flex', alignItems: 'center', gap: '10px',
+              transition: 'all 0.15s', fontWeight: 700, fontFamily: "'Rajdhani', sans-serif",
             }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#fef2f2')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(239,68,68,0.1)')}
               onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
-              <LogOut size={14} /> Sign Out
+              <LogOut size={16} /> SIGN OUT MISSION
             </div>
           </div>
         )}

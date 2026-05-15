@@ -17,41 +17,49 @@ export function SOSPanel() {
 
   return (
     <div style={{
-      position: 'absolute', top: 0, right: 0, bottom: 0, width: '380px', zIndex: 1500,
-      background: '#fff', borderLeft: '1px solid #e2e8f0',
-      boxShadow: '-8px 0 32px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column',
-      animation: 'slideInRight 0.3s ease-out',
+      position: 'absolute', top: 0, right: 0, bottom: 0, width: '420px', zIndex: 1500,
+      background: 'var(--bgp)', borderLeft: '1px solid var(--bdr)',
+      boxShadow: '-20px 0 50px rgba(0,0,0,0.8)', display: 'flex', flexDirection: 'column',
+      animation: 'slideInRight 0.3s ease-out', backdropFilter: 'blur(30px)',
     }}>
       {/* Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #dc2626, #b91c1c)', padding: '16px 20px',
+        background: 'linear-gradient(135deg, #ef4444, #991b1b)', padding: '20px 24px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'white',
-        flexShrink: 0,
+        flexShrink: 0, borderBottom: '1px solid rgba(255,255,255,0.1)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <AlertTriangle size={18} />
-          <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 700, fontSize: '16px', letterSpacing: '0.1em' }}>
-            ACTIVE EMERGENCIES
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <AlertTriangle size={20} />
+          <span style={{ fontFamily: "'Rajdhani', sans-serif", fontWeight: 800, fontSize: '18px', letterSpacing: '0.2em' }}>
+            EMERGENCY OVERRIDE
           </span>
           <div style={{
-            background: 'rgba(255,255,255,0.25)', borderRadius: '10px', padding: '2px 8px',
-            fontSize: '12px', fontWeight: 700,
+            background: 'rgba(0,0,0,0.3)', borderRadius: '6px', padding: '2px 10px',
+            fontSize: '14px', fontWeight: 900, border: '1px solid rgba(255,255,255,0.2)',
           }}>{sosIncidents.length}</div>
         </div>
         <button onClick={() => setShowSOSPanel(false)} style={{
-          background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '6px',
-          width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', color: 'white',
-        }}><X size={14} /></button>
+          background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px',
+          width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer', color: 'white', transition: 'all 0.2s',
+        }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.2)')}
+        ><X size={18} /></button>
       </div>
 
       {/* Incident List */}
-      <div style={{ flex: 1, overflow: 'auto', padding: '12px' }}>
+      <div style={{ flex: 1, overflow: 'auto', padding: '16px', background: 'rgba(0,0,0,0.2)' }}>
         {sosIncidents.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px 20px', color: '#94a3b8' }}>
-            <AlertTriangle size={40} style={{ margin: '0 auto 12px', opacity: 0.3 }} />
-            <p style={{ fontWeight: 600, fontSize: '14px' }}>No Active Emergencies</p>
-            <p style={{ fontSize: '12px' }}>All clear. Use the SOS button to report an incident.</p>
+          <div style={{ textAlign: 'center', padding: '60px 24px', color: 'var(--tm)' }}>
+            <div style={{ 
+              width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.02)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px',
+              border: '1px solid var(--bdr)'
+            }}>
+              <CheckCircle size={40} style={{ opacity: 0.2 }} />
+            </div>
+            <p style={{ fontWeight: 800, fontSize: '16px', fontFamily: "'Rajdhani', sans-serif", letterSpacing: '0.1em', color: 'var(--ts)' }}>ALL SYSTEMS NOMINAL</p>
+            <p style={{ fontSize: '13px', marginTop: '8px' }}>No active emergencies detected in the network.</p>
           </div>
         ) : (
           sosIncidents.map((incident) => {
@@ -60,66 +68,70 @@ export function SOSPanel() {
             const timeAgo = getTimeAgo(incident.created_at);
             return (
               <div key={incident.id} style={{
-                background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px',
-                padding: '16px', marginBottom: '10px', transition: 'all 0.2s',
+                background: 'rgba(255,255,255,0.02)', border: '1px solid var(--bdr)', borderRadius: '16px',
+                padding: '20px', marginBottom: '16px', transition: 'all 0.3s',
                 borderLeft: `4px solid ${sevColor}`,
+                boxShadow: incident.severity === 'critical' ? `0 0 20px ${sevColor}15` : 'none',
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '20px' }}>{icon}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ fontSize: '24px', background: 'rgba(255,255,255,0.05)', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{icon}</div>
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: '14px', color: '#0f172a', textTransform: 'capitalize' }}>
+                      <div style={{ fontWeight: 800, fontSize: '16px', color: 'white', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: "'Rajdhani', sans-serif" }}>
                         {incident.incident_type.replace('_', ' ')}
                       </div>
-                      <div style={{ fontSize: '11px', color: '#64748b' }}>{timeAgo}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--tm)', fontFamily: "'JetBrains Mono', monospace", marginTop: '2px' }}>{timeAgo}</div>
                     </div>
                   </div>
                   {/* Severity Badge */}
                   <div style={{
-                    display: 'flex', alignItems: 'center', gap: '4px',
-                    padding: '3px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: 700,
-                    textTransform: 'uppercase', letterSpacing: '0.05em',
-                    background: `${sevColor}15`, color: sevColor, border: `1px solid ${sevColor}30`,
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                    padding: '4px 12px', borderRadius: '8px', fontSize: '10px', fontWeight: 900,
+                    textTransform: 'uppercase', letterSpacing: '0.1em',
+                    background: `${sevColor}20`, color: sevColor, border: `1px solid ${sevColor}40`,
+                    fontFamily: "'Rajdhani', sans-serif",
                   }}>
                     <div style={{
                       width: '6px', height: '6px', borderRadius: '50%', background: sevColor,
-                      animation: incident.severity === 'critical' ? 'sosPulse 1.5s infinite' : 'none',
+                      animation: incident.severity === 'critical' ? 'sosPulse 1s infinite' : 'none',
+                      boxShadow: `0 0 8px ${sevColor}`,
                     }} />
                     {incident.severity}
                   </div>
                 </div>
 
                 {incident.description && (
-                  <p style={{ fontSize: '12px', color: '#475569', margin: '0 0 10px', lineHeight: 1.5 }}>
+                  <p style={{ fontSize: '13px', color: 'var(--ts)', margin: '0 0 16px', lineHeight: 1.6, background: 'rgba(0,0,0,0.2)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
                     {incident.description}
                   </p>
                 )}
 
-                <div style={{ display: 'flex', gap: '12px', fontSize: '11px', color: '#64748b', marginBottom: '12px' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Users size={12} /> {incident.responders_assigned} responders
+                <div style={{ display: 'flex', gap: '16px', fontSize: '12px', color: 'var(--tm)', marginBottom: '16px', fontFamily: "'JetBrains Mono', monospace" }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Users size={14} color="var(--ab)" /> {incident.responders_assigned} UNITS
                   </span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Clock size={12} /> ETA {incident.eta_minutes}m
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Clock size={14} color="var(--ac)" /> ETA {incident.eta_minutes}M
                   </span>
                 </div>
 
                 <button onClick={() => resolveSOSIncident(incident.id)} style={{
-                  width: '100%', padding: '8px', borderRadius: '8px', border: '1.5px solid #22c55e',
-                  background: '#f0fdf4', color: '#16a34a', fontSize: '12px', fontWeight: 700,
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-                  transition: 'all 0.2s',
+                  width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid var(--ag)',
+                  background: 'rgba(16, 185, 129, 0.1)', color: 'var(--ag)', fontSize: '13px', fontWeight: 800,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                  transition: 'all 0.2s', fontFamily: "'Rajdhani', sans-serif", textTransform: 'uppercase', letterSpacing: '0.1em'
                 }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = '#22c55e'; e.currentTarget.style.color = '#fff'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = '#f0fdf4'; e.currentTarget.style.color = '#16a34a'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--ag)'; e.currentTarget.style.color = 'black'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)'; e.currentTarget.style.color = 'var(--ag)'; }}
                 >
-                  <CheckCircle size={14} /> Mark Resolved
+                  <CheckCircle size={16} /> RESOLVE INCIDENT
                 </button>
               </div>
             );
           })
         )}
       </div>
+
 
       <style>{`
         @keyframes slideInRight {

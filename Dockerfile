@@ -1,11 +1,13 @@
 FROM node:20-alpine AS builder
+RUN corepack enable && corepack prepare pnpm@9 --activate
 WORKDIR /app
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY package.json pnpm-lock.yaml ./
+# Lockfile may lag package.json; refresh graph inside the image (commit an updated pnpm-lock.yaml for fully reproducible CI).
+RUN pnpm install --no-frozen-lockfile
 COPY . .
 ARG VITE_BACKEND_URL=http://localhost:8000
 ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
-RUN yarn build
+RUN pnpm run build
 
 FROM nginx:alpine AS runner
 COPY nginx.conf /etc/nginx/conf.d/default.conf

@@ -1,3 +1,5 @@
+import os
+import uuid
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from typing import List, Optional
 from datetime import datetime
@@ -6,6 +8,9 @@ from app.schemas import ImageCreate, ImageResponse, LocationModel
 from app.database import get_images_collection
 
 router = APIRouter(prefix="/api/images", tags=["images"])
+
+UPLOAD_DIR = os.getenv("UPLOAD_DIR", "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @router.post("/upload", response_model=ImageResponse)
 async def upload_image(
@@ -19,11 +24,17 @@ async def upload_image(
     # Read file content
     contents = await file.read()
     file_size = len(contents)
+
+    # Save file to disk so the YOLO model can read it
+    safe_name = f"{uuid.uuid4().hex[:12]}_{file.filename}"
+    save_path = os.path.join(UPLOAD_DIR, safe_name)
+    with open(save_path, "wb") as f:
+        f.write(contents)
     
     # Create image document
     image_doc = {
         "filename": file.filename,
-        "path": f"uploads/{file.filename}",
+        "path": save_path,
         "location": {
             "latitude": latitude,
             "longitude": longitude,

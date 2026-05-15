@@ -19,6 +19,13 @@ logger = logging.getLogger("railvision")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await connect_db()
+    # Load the YOLO model at startup
+    try:
+        from app.ml_engine import get_engine
+        engine = get_engine()
+        logger.info("ML engine ready: %s", "available" if engine.is_available else "not available")
+    except Exception as e:
+        logger.warning("ML engine failed to load: %s", e)
     yield
     await disconnect_db()
 
@@ -31,10 +38,31 @@ app = FastAPI(
 )
 
 # Configure CORS
-cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:3001,*").split(",")
+def _cors_config():
+    raw_origins = os.getenv("CORS_ORIGINS", "")
+    configured = [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
+    local_dev_origins = [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:3005",
+        "http://localhost:5173",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
+        "http://127.0.0.1:3005",
+        "http://127.0.0.1:5173",
+        "http://frontend",
+    ]
+    origins = list(dict.fromkeys(configured + local_dev_origins))
+    allow_any = "*" in origins
+    origins = [origin for origin in origins if origin != "*"]
+    return origins, ".*" if allow_any else None
+
+
+cors_origins, cors_origin_regex = _cors_config()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
+    allow_origin_regex=cors_origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

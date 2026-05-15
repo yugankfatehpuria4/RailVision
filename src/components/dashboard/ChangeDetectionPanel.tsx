@@ -20,24 +20,26 @@ export function ChangeDetectionPanel() {
     }}>
       {/* Header */}
       <div style={{
-        padding: '14px 16px', borderBottom: '1px solid var(--bdr)',
-        background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.08), rgba(239, 68, 68, 0.04))',
+        padding: '20px 24px', borderBottom: '1px solid var(--bdr)',
+        background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(168, 85, 247, 0.02))',
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: 'var(--tm)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>
-              Change Detection
+            <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: '12px', color: 'var(--ap)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '4px', fontWeight: 800 }}>
+              TEMPORAL ANALYSIS
             </div>
-            <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: '20px', fontWeight: 700 }}>
-              {summary.total_changes} Changes Found
+            <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: '24px', fontWeight: 800, color: 'white' }}>
+              {summary.total_changes} DELTAS FOUND
             </div>
           </div>
           <button onClick={() => setShowChangeDetection(false)} style={{
-            width: '30px', height: '30px', borderRadius: '6px', border: '1px solid var(--bdr)',
-            background: 'var(--bgc)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', color: 'var(--ts)',
-          }}>
-            <X size={14} />
+            width: '36px', height: '36px', borderRadius: '10px', border: '1px solid var(--bdr)',
+            background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', color: 'var(--ts)', transition: 'all 0.2s',
+          }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
+          >
+            <X size={20} />
           </button>
         </div>
         <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>

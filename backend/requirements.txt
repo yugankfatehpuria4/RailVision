@@ -12,7 +12,11 @@ numpy==1.26.2
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 bcrypt==4.1.1
-email-validator==2.1.0
+email-validator==2.2.0
 python-dateutil==2.8.2
 httpx==0.25.1
 opencv-python-headless==4.8.1.78
+# Pinned for faster dependency resolution in Docker (torch stack is still large on first pull).
+ultralytics==8.3.40
+torch==2.2.2
+torchvision==0.17.2

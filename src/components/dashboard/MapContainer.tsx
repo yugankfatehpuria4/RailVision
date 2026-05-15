@@ -12,11 +12,35 @@ interface MapContainerProps {
   processingStatus?: string;
 }
 
+const hasFeatures = (geojson: any) => Array.isArray(geojson?.features) && geojson.features.length > 0;
+
+const tagGeoJSON = (geojson: any, kind: 'detection' | 'change') => ({
+  type: 'FeatureCollection',
+  features: (geojson?.features || []).map((feature: any) => ({
+    ...feature,
+    properties: {
+      kind,
+      ...(feature.properties || {}),
+    },
+  })),
+});
+
+const collectionFromItems = (items: any[] | undefined, kind: 'detection' | 'change') => ({
+  type: 'FeatureCollection',
+  features: (items || [])
+    .filter((item) => Array.isArray(item.polygon) && item.polygon.length >= 4)
+    .map((item) => ({
+      type: 'Feature',
+      geometry: { type: 'Polygon', coordinates: [item.polygon] },
+      properties: { kind, ...item },
+    })),
+});
+
 export function MapContainer({ isProcessing = false, processingStatus = 'Analyzing satellite imagery...' }: MapContainerProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const detectionLayerRef = useRef<L.LayerGroup | null>(null);
-  const { activeDetectionResults, layerVisibility, mapCenter } = useAnalysisStore();
+  const { activeDetectionResults, changeDetectionResults, layerVisibility, mapCenter } = useAnalysisStore();
 
   useEffect(() => {
     if (!mapContainer.current || mapRef.current) return;
@@ -65,13 +89,13 @@ export function MapContainer({ isProcessing = false, processingStatus = 'Analyzi
     const legend = new L.Control({ position: 'bottomright' });
     legend.onAdd = () => {
       const div = L.DomUtil.create('div');
-      div.style.cssText = 'background:rgba(15,23,42,0.92);border:1px solid #1e293b;border-radius:8px;padding:10px 12px;backdrop-filter:blur(10px);min-width:140px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.5);';
+      div.style.cssText = 'background:rgba(2,6,23,0.9);border:1px solid var(--bdr);border-radius:12px;padding:12px 16px;backdrop-filter:blur(20px);min-width:180px;box-shadow:0 10px 30px rgba(0,0,0,0.5);';
       div.innerHTML = `
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#94a3b8;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">Legend</div>
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><div style="width:8px;height:8px;border-radius:2px;background:#0ea5e9;"></div><div style="font-size:10px;color:#7a9bc4;">Stations / Tracks</div></div>
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><div style="width:8px;height:8px;border-radius:2px;background:#a855f7;"></div><div style="font-size:10px;color:#7a9bc4;">Bridges</div></div>
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><div style="width:8px;height:8px;border-radius:2px;background:#991b1b;border:1px solid #450a0a"></div><div style="font-size:10px;color:#ef4444;font-weight:bold;">Prone Areas (Encroachments)</div></div>
-        <div style="display:flex;align-items:center;gap:6px;"><div style="width:8px;height:8px;border-radius:2px;background:#22c55e;"></div><div style="font-size:10px;color:#7a9bc4;">Active Detections</div></div>
+        <div style="font-family:'Rajdhani',sans-serif;font-size:11px;color:var(--tm);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:10px;font-weight:700;">Tactical Legend</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><div style="width:10px;height:10px;border-radius:2px;background:var(--ab);box-shadow:0 0 8px var(--ab);"></div><div style="font-family:'Rajdhani',sans-serif;font-size:12px;color:var(--ts);font-weight:600;">Stations / Tracks</div></div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><div style="width:10px;height:10px;border-radius:2px;background:var(--ap);box-shadow:0 0 8px var(--ap);"></div><div style="font-family:'Rajdhani',sans-serif;font-size:12px;color:var(--ts);font-weight:600;">Bridges / Assets</div></div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><div style="width:10px;height:10px;border-radius:2px;background:var(--ar);border:1px solid #450a0a;box-shadow:0 0 8px var(--ar);"></div><div style="font-family:'Rajdhani',sans-serif;font-size:12px;color:#ef4444;font-weight:800;">Encroachment Zones</div></div>
+        <div style="display:flex;align-items:center;gap:10px;"><div style="width:10px;height:10px;border-radius:2px;background:var(--ag);box-shadow:0 0 8px var(--ag);"></div><div style="font-family:'Rajdhani',sans-serif;font-size:12px;color:var(--ag);font-weight:800;">AI Detections</div></div>
       `;
       return div;
     };
@@ -89,28 +113,45 @@ export function MapContainer({ isProcessing = false, processingStatus = 'Analyzi
 
     detectionLayerRef.current.clearLayers();
 
-    if (!activeDetectionResults?.geojson?.features) return;
+    if (!layerVisibility.detections) return;
 
-    const geojson = activeDetectionResults.geojson;
+    const detectionGeoJSON = hasFeatures(activeDetectionResults?.geojson)
+      ? tagGeoJSON(activeDetectionResults?.geojson, 'detection')
+      : collectionFromItems(activeDetectionResults?.detections, 'detection');
+    const changeGeoJSON = hasFeatures(changeDetectionResults?.geojson)
+      ? tagGeoJSON(changeDetectionResults?.geojson, 'change')
+      : collectionFromItems(changeDetectionResults?.changes, 'change');
+    const geojson = {
+      type: 'FeatureCollection',
+      features: [
+        ...detectionGeoJSON.features,
+        ...changeGeoJSON.features,
+      ],
+    };
 
-    L.geoJSON(geojson, {
+    if (geojson.features.length === 0) return;
+
+    L.geoJSON(geojson as any, {
       style: (feature?: Feature): PathOptions => {
-        const color = feature?.properties?.color || '#22c55e';
-        const severity = feature?.properties?.severity;
-        const isProne = severity === 'critical' || feature?.properties?.type === 'encroachment';
+        const props = (feature?.properties || {}) as Record<string, unknown>;
+        const isChange = props.kind === 'change';
+        const color = String(props.color || (isChange ? '#a855f7' : '#22c55e'));
+        const severity = props.severity;
+        const isProne = severity === 'critical' || props.type === 'encroachment';
         const finalColor = isProne ? '#991b1b' : color;
         
         return {
           color: isProne ? '#450a0a' : finalColor, // Darker stroke for prone areas
-          weight: isProne ? 4 : 2,
+          weight: isProne ? 4 : isChange ? 3 : 2,
           opacity: 1,
           fillColor: finalColor,
-          fillOpacity: isProne ? 0.7 : 0.25,
-          dashArray: isProne ? '' : '4, 4',
+          fillOpacity: isProne ? 0.7 : isChange ? 0.35 : 0.25,
+          dashArray: isProne ? '' : isChange ? '8, 4' : '4, 4',
         };
       },
       onEachFeature: (feature: Feature, layer: Layer) => {
         const p = (feature.properties || {}) as Record<string, unknown>;
+        const title = p.kind === 'change' ? 'Temporal Change' : 'Detection';
         layer.bindPopup(`
           <div style="font-family:'Rajdhani',sans-serif;min-width:200px;">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
@@ -118,9 +159,11 @@ export function MapContainer({ isProcessing = false, processingStatus = 'Analyzi
               <span style="font-weight:700;font-size:14px;">${p.label || p.type || 'Detection'}</span>
             </div>
             <div style="font-size:12px;color:#666;line-height:1.6;">
+              <div>Layer: <b>${title}</b></div>
               <div>Type: <b>${p.type || 'unknown'}</b></div>
               <div>Confidence: <b>${typeof p.confidence === 'number' ? (p.confidence * 100).toFixed(0) + '%' : 'N/A'}</b></div>
               <div>Area: <b>${p.area_sqm ? p.area_sqm + ' m²' : 'N/A'}</b></div>
+              ${typeof p.change_pct === 'number' ? `<div>Change: <b>${p.change_pct}%</b></div>` : ''}
               ${p.severity ? `<div>Severity: <b style="color:${p.severity === 'critical' ? '#ef4444' : p.severity === 'high' ? '#f59e0b' : '#0ea5e9'}">${String(p.severity).toUpperCase()}</b></div>` : ''}
             </div>
           </div>
@@ -129,11 +172,11 @@ export function MapContainer({ isProcessing = false, processingStatus = 'Analyzi
     }).addTo(detectionLayerRef.current);
 
     // Fit bounds to show detections
-    const bounds = L.geoJSON(geojson).getBounds();
+    const bounds = L.geoJSON(geojson as any).getBounds();
     if (bounds.isValid()) {
       mapRef.current.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
     }
-  }, [activeDetectionResults]);
+  }, [activeDetectionResults, changeDetectionResults, layerVisibility.detections]);
 
   // Update map center when store changes
   useEffect(() => {
@@ -182,18 +225,25 @@ export function MapContainer({ isProcessing = false, processingStatus = 'Analyzi
 
       {/* Coordinates display */}
       <div style={{
-        position: 'absolute', bottom: '18px', left: '12px', zIndex: 1000,
-        background: 'rgba(15, 23, 42, 0.92)', border: '1px solid #1e293b',
-        borderRadius: '8px', padding: '7px 12px', backdropFilter: 'blur(10px)',
-        display: 'flex', gap: '14px', alignItems: 'center',
-        fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: '#94a3b8',
-        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.5)',
+        position: 'absolute', bottom: '24px', left: '20px', zIndex: 1000,
+        background: 'rgba(2, 6, 23, 0.9)', border: '1px solid var(--bdr)',
+        borderRadius: '12px', padding: '10px 16px', backdropFilter: 'blur(20px)',
+        display: 'flex', gap: '20px', alignItems: 'center',
+        fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--ts)',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
       }}>
-        <div>Lat: <span style={{ color: '#0ea5e9' }}>{mapCenter.lat.toFixed(4)}</span></div>
-        <div>Lng: <span style={{ color: '#0ea5e9' }}>{mapCenter.lng.toFixed(4)}</span></div>
-        <div style={{ width: '1px', height: '12px', background: '#1e293b' }} />
-        <div style={{ color: activeDetectionResults ? '#22c55e' : '#94a3b8' }}>
-          {activeDetectionResults ? `${activeDetectionResults.summary.total_detections} detections` : 'No analysis'}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--ab)' }} />
+          LAT: <span style={{ color: 'var(--tp)', fontWeight: 700 }}>{mapCenter.lat.toFixed(6)}</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--ab)' }} />
+          LNG: <span style={{ color: 'var(--tp)', fontWeight: 700 }}>{mapCenter.lng.toFixed(6)}</span>
+        </div>
+        <div style={{ width: '1px', height: '14px', background: 'var(--bdr)' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: activeDetectionResults ? 'var(--ag)' : 'var(--tm)' }}>
+          <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: activeDetectionResults ? 'var(--ag)' : 'var(--tm)', animation: activeDetectionResults ? 'pdot 1.5s infinite' : 'none' }} />
+          {activeDetectionResults ? `${activeDetectionResults.summary.total_detections} ACTIVE SIGNALS` : 'NO TARGETS'}
         </div>
       </div>
     </div>
