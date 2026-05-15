@@ -406,9 +406,9 @@ Features:
 
 > Add real screenshots here (VERY IMPORTANT)
 
-| Dashboard | GIS View | SOS System |
+| Landing Page | GIS View | SOS System |
 |-----------|-----------|-------------|
-| ![](public/dashboard.png) | ![](public/map.png) | ![](public/sos.png) |
+| ![](public/landing.png) | ![](public/map.png) | ![](public/sos.png) |
 
 ---
 
