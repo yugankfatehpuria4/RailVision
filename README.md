@@ -1,6 +1,6 @@
-# RailVision V
+# RailVision 
 
-**RailVision V** is a full-stack platform for railway infrastructure intelligence: upload geotagged imagery, run AI-assisted detection (YOLOv8 / Ultralytics when a model is present), visualize assets on an interactive map, track alerts and SOS incidents, and export GeoJSON or reports. It is built as a **Vite + React** SPA talking to a **FastAPI** API with **MongoDB** persistence and optional **Docker Compose** orchestration.
+**RailVision** is a full-stack platform for railway infrastructure intelligence: upload geotagged imagery, run AI-assisted detection (YOLOv8 / Ultralytics when a model is present), visualize assets on an interactive map, track alerts and SOS incidents, and export GeoJSON or reports. It is built as a **Vite + React** SPA talking to a **FastAPI** API with **MongoDB** persistence and optional **Docker Compose** orchestration.
 
 ```mermaid
 flowchart LR
